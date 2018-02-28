@@ -232,6 +232,7 @@ class AndroidWebView extends Component {
     ]),
 
       urlPrefixesForDefaultIntent: PropTypes.array,
+      thirdPartyCookiesEnabled: PropTypes.bool,
 
     /**
      * Used on Android only, controls whether form autocomplete data should be saved
@@ -423,6 +424,7 @@ class AndroidWebView extends Component {
         allowUniversalAccessFromFileURLs={this.props.allowUniversalAccessFromFileURLs}
         mixedContentMode={this.props.mixedContentMode}
         urlPrefixesForDefaultIntent={this.props.urlPrefixesForDefaultIntent}
+        thirdPartyCookiesEnabled={this.props.thirdPartyCookiesEnabled}
         saveFormDataDisabled={this.props.saveFormDataDisabled}
         uploadEnabledAndroid={true}
       />
