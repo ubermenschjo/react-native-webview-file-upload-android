@@ -15,7 +15,7 @@ public class AndroidWebViewPackage implements ReactPackage {
     private AndroidWebViewManager manager;
     private AndroidWebViewModule module;
 
-    @Override public List<Class<? extends JavaScriptModule>> createJSModules() {
+    public List<Class<? extends JavaScriptModule>> createJSModules() {
         return Collections.emptyList();
     }
 
