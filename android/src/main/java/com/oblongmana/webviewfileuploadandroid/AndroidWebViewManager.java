@@ -1,9 +1,15 @@
 package com.oblongmana.webviewfileuploadandroid;
 
 import android.app.Activity;
+import android.app.DownloadManager;
+import android.content.Context;
+import android.os.Environment;
+import android.webkit.URLUtil;
+import android.widget.Toast;
 import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
+import android.webkit.DownloadListener;
 import android.webkit.JsPromptResult;
 import android.webkit.JsResult;
 import android.webkit.ValueCallback;
@@ -68,15 +74,40 @@ public class AndroidWebViewManager extends ReactWebViewManager {
 
             private void openFileChooserView(){
                 try {
-                    final Intent galleryIntent = new Intent(Intent.ACTION_PICK);
-                    galleryIntent.setType("image/*");
-                    final Intent chooserIntent = Intent.createChooser(galleryIntent, "Choose File");
+                    Intent openableFileIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                    openableFileIntent.addCategory(Intent.CATEGORY_OPENABLE);
+                    openableFileIntent.setType("*/*");
+
+                    final Intent chooserIntent = Intent.createChooser(openableFileIntent, "Choose File");
                     module.getActivity().startActivityForResult(chooserIntent, 1);
                 } catch (Exception e) {
                     Log.d("customwebview", e.toString());
                 }
             }
         });
+        view.setDownloadListener(new DownloadListener() {
+            public void onDownloadStart(String url, String userAgent,
+                    String contentDisposition, String mimetype,
+                    long contentLength) {
+
+                String fileName = URLUtil.guessFileName(url,contentDisposition,mimetype);
+                String downloadMessage = "Downloading " + fileName;
+
+                DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
+                request.addRequestHeader("User-Agent", userAgent);
+                request.setTitle(fileName);
+                request.setDescription(downloadMessage);
+                request.allowScanningByMediaScanner();
+                request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+                request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName);
+
+                DownloadManager dm = (DownloadManager) module.getActivity().getBaseContext().getSystemService(Context.DOWNLOAD_SERVICE);
+                dm.enqueue(request);
+
+                Toast.makeText(module.getActivity().getApplicationContext(), downloadMessage, Toast.LENGTH_LONG).show();
+            }
+        });
+
         return view;
     }
 
